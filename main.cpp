@@ -41,14 +41,67 @@ static auto __ __attribute__((unused)) = []() { // NOLINT
 
 class Solution {
 public:
-  bool func(vector<int> &arr) { return true; }
+  bool isLetter(char c) { return c >= 'a' && c <= 'z'; }
+  string reformat(string &s) {
+    // start with letter or digit
+    int sz = s.length();
+    if (s.empty() || sz == 1)
+      return s;
+    vector<bool> v(sz);
+    int letters = 0;
+    for (int i = 0; i < sz; i++) {
+      if (isLetter(s[i])) {
+        ++letters;
+        v[i] = true;
+      } else {
+        v[i] = false;
+      }
+    }
+    if (abs(sz - 2 * letters) > 1) {
+      return "";
+    }
+    if (letters > sz - letters) {
+      // must start with a letter
+      int i = 0;
+      while (!v[i]) {
+        i++;
+      }
+      swap(s[0], s[i]);
+      swap(v[0], v[i]);
+    }
+    if (letters < sz - letters) {
+      // must start with a number
+      int i = 0;
+      while (v[i]) {
+        i++;
+      }
+      swap(s[0], s[i]);
+      swap(v[0], v[i]);
+    }
+    for (int i = 1; i < s.length(); i++) {
+      if (v[i - 1] == v[i]) {
+        // find one to swap;
+        int index = i + 1;
+        while (index < s.size() && (v[i - 1] == v[index])) {
+          ++index;
+        }
+        if (index == s.size())
+          return "";
+        swap(s[i], s[index]);
+        swap(v[i], v[index]);
+      }
+    }
+    return s;
+  }
 };
 
 void test1() {
   cout << boolalpha;
   vector<int> arr{1, 2, 3};
-
-  cout << "1 ? " << Solution().func(arr) << endl;
+  string s = "covid2019";
+  cout << "c2v0d1i9o ? " << Solution().reformat(s) << endl;
+  s = "ab123";
+  cout << "1a2b3 ? " << Solution().reformat(s) << endl;
 }
 
 void test2() {}
